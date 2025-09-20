@@ -1,13 +1,13 @@
 import {useState,useCallback} from 'react'
 import {Alert} from 'react-native'
-const API_URL = "http://10.0.2.2:5001/api" 
+const API_URL = "https://backend-mobileapp-study.onrender.com/api" 
 
 export const useTransaction = (userid) => {
   const [trans, setTrans] = useState([])
   const [summary,setSummary] = useState ({
-    total: 0 ,
-    income: 0,
-    outcome: 0
+    "total": 0 ,
+    "income": 0,
+    "outcome": 0
   })
   const [isLoading, setIsLoading] = useState(true)
 

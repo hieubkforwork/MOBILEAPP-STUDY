@@ -1,32 +1,61 @@
-import { SignedIn, SignedOut, useUser } from '@clerk/clerk-expo'
-import { Link } from 'expo-router'
-import { Text, View } from 'react-native'
-import { SignOutButton } from '../../component/SignOutButton'
-import {useTransaction} from "../hook/useTransaction"
-import { useEffect } from 'react'
-export default function Page() {
-  const { user } = useUser()
-  console.log(user?.id)
+import { SignedIn, SignedOut, useUser } from "@clerk/clerk-expo";
+import { Link, useRouter } from "expo-router";
+import { Text, TouchableOpacity, View } from "react-native";
+import { SignOutButton } from "../../component/SignOutButton";
+import { Image } from "expo-image";
+import { useTransaction } from "../hook/useTransaction";
+import { useEffect } from "react";
+import PageLoader from "@/component/PageLoader";
+import { styles } from "@/styles/home.styles";
+import { Ionicons } from "@expo/vector-icons";
+import { BalanceCard } from "@/component/BalanceCard";
 
-  const {trans, summary, isLoading, loadData, delTrans} = useTransaction(user?.id)
-  useEffect(()=>{loadData()},[loadData])
-  console.log("transaction:",trans)
-  console.log("summary:", summary)
-  
+export default function Page() {
+  const { user } = useUser();
+  const router = useRouter();
+  const { trans, summary, isLoading, loadData, delTrans } = useTransaction(
+    user?.id
+  );
+  console.log(summary)
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+  if (isLoading) return <PageLoader />;
+
   return (
-    <View>
-      <SignedIn>
-        <Text>Hello {user?.emailAddresses[0].emailAddress}</Text>
-        <SignOutButton />
-      </SignedIn>
-      <SignedOut>
-        <Link href="/(auth)/sign-in">
-          <Text>Sign in</Text>
-        </Link>
-        <Link href="/(auth)/sign-up">
-          <Text>Sign up</Text>
-        </Link>
-      </SignedOut>
+    <View style={styles.container}>
+      <View style={styles.content}>
+        {/* HEADER */}
+        <View style={styles.header}>
+          {/* HEADER LEFT */}
+          <View style={styles.headerLeft}>
+            <Image
+              source={require("../../assets/images/logo.png")}
+              style={styles.headerLogo}
+              resizeMode="contain"
+            />
+            <View style={styles.welcomeContainer}>
+              <Text style={styles.welcomeText}>Welcome,</Text>
+              <Text style={styles.usernameText}>
+                {user?.emailAddresses[0]?.emailAddress.split("@")[0]}
+              </Text>
+            </View>
+          </View>
+
+          {/* HEADER RIGHT */}
+          <View style={styles.headerRight}>
+            <TouchableOpacity
+              style={styles.addButton}
+              onPress={() => router.push("/create")}
+            >
+              <Ionicons name="add-circle" size={20} color="#FFF" />
+              <Text style={styles.addButtonText}>ADD</Text>
+            </TouchableOpacity>
+            <SignOutButton/>
+          </View>
+        </View>
+        <BalanceCard summary={summary}/>
+      </View>
     </View>
-  )
+  );
 }
